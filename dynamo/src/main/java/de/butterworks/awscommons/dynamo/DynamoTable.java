@@ -29,13 +29,13 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
         logger.debug(String.format("Initializing table %s with R/W capacity %s / %s", tableName, readCapacityUnits, writeCapacityUnits));
 
         if(checkTableExistence) {
-            if (!Commons.getInstance().tableExists(tableName)) {
+            if (!DynamoCommons.getInstance().tableExists(tableName)) {
                 logger.info("Table " + tableName + " does not exist. Creating...");
                 createTable();
             }
         }
-        table = Commons.getInstance().getDb().getTable(tableName);
-        db = Commons.getInstance().getDb();
+        table = DynamoCommons.getInstance().getDb().getTable(tableName);
+        db = DynamoCommons.getInstance().getDb();
     }
     protected DynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter) {
         this(tableName, readCapacityUnits, writeCapacityUnits, converter, false);
@@ -69,7 +69,7 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
             request.setAttributeDefinitions(attributeDefinitions);
 
             logger.debug("Issuing CreateTable request for " + tableName);
-            final Table table = Commons.getInstance().getDb().createTable(request);
+            final Table table = DynamoCommons.getInstance().getDb().createTable(request);
             logger.debug("Waiting for table to be created...");
             table.waitForActive();
 
