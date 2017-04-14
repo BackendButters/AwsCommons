@@ -1,16 +1,19 @@
 package de.butterworks.awscommons.dynamo;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.model.TableStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Commons {
+
+    private static final Logger logger = LoggerFactory.getLogger(Commons.class);
+
     private final AmazonDynamoDBClient client;
 
     private static Commons instance = null;
@@ -22,6 +25,9 @@ public class Commons {
     private final static Regions region = Regions.fromName(System.getenv("region").toUpperCase());
 
     private Commons() {
+        logger.info("Using Region " + region.name());
+        logger.info("Using Access Key " + awsAccessKey);
+
         client = new AmazonDynamoDBClient(new BasicAWSCredentials(awsAccessKey, awsSecretKey))
                 .withRegion(region);
 
@@ -35,7 +41,6 @@ public class Commons {
     }
 
     public AmazonDynamoDBClient getClient() {
-
         return client;
     }
 

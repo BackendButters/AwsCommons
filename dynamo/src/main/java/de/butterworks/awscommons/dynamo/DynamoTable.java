@@ -4,6 +4,8 @@ package de.butterworks.awscommons.dynamo;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
 import com.amazonaws.services.dynamodbv2.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -16,15 +18,19 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
     protected final DynamoConverter<T> converter;
     protected final DynamoDB db;
 
+    private static final Logger logger = LoggerFactory.getLogger(DynamoTable.class);
+
     protected DynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter, final boolean checkTableExistence) {
         this.tableName = tableName;
         this.readCapacityUnits = readCapacityUnits;
         this.writeCapacityUnits = writeCapacityUnits;
         this.converter = converter;
 
+        logger.debug(String.format("Initializing table %s with R/W capacity %s / %s", tableName, readCapacityUnits, writeCapacityUnits));
+
         if(checkTableExistence) {
             if (!Commons.getInstance().tableExists(tableName)) {
-                System.out.println("Table " + tableName + " does not exist. Creating...");
+                logger.info("Table " + tableName + " does not exist. Creating...");
                 createTable();
             }
         }
@@ -62,15 +68,13 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
 
             request.setAttributeDefinitions(attributeDefinitions);
 
-            System.out.println("Issuing CreateTable request for " + tableName);
+            logger.debug("Issuing CreateTable request for " + tableName);
             final Table table = Commons.getInstance().getDb().createTable(request);
-            System.out.println("Waiting for " + tableName
-                    + " to be created...this may take a while...");
+            logger.debug("Waiting for table to be created...");
             table.waitForActive();
 
         } catch (final Exception e) {
-            System.err.println("CreateTable request failed for " + tableName);
-            System.err.println(e.getMessage());
+            logger.error("CreateTable request failed: " + e.getMessage());
         }
     }
 
