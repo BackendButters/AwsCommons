@@ -1,6 +1,7 @@
 package de.butterworks.awscommons.lambdaweb.actions;
 
 import com.google.gson.JsonObject;
+import de.butterworks.awscommons.lambdaweb.AbstractApiResponse;
 import de.butterworks.awscommons.lambdaweb.SerializationUtil;
 import de.butterworks.awscommons.lambdaweb.exceptions.AbstractWebException;
 
@@ -25,5 +26,5 @@ public abstract class AbstractApiAction<T> {
      * @return JSON serialized result
      * @throws AbstractWebException
      */
-    public abstract String handle() throws AbstractWebException;
+    public abstract AbstractApiResponse handle() throws AbstractWebException;
 }
