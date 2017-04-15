@@ -9,18 +9,43 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
+public abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
 
-    protected final String tableName;
-    protected final long readCapacityUnits;
-    protected final long writeCapacityUnits;
-    protected final Table table;
-    protected final DynamoConverter<T> converter;
-    protected final DynamoDB db;
+    private final String tableName;
+    private final long readCapacityUnits;
+    private final long writeCapacityUnits;
+    private final Table table;
+    private final DynamoConverter<T> converter;
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoTable.class);
 
-    protected DynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter, final boolean checkTableExistence) {
+    public String getTableName() {
+        return tableName;
+    }
+
+    public long getReadCapacityUnits() {
+        return readCapacityUnits;
+    }
+
+    public long getWriteCapacityUnits() {
+        return writeCapacityUnits;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public DynamoConverter<T> getConverter() {
+        return converter;
+    }
+
+    protected DynamoTable(final String tableName,
+                          final long readCapacityUnits,
+                          final long writeCapacityUnits,
+                          final DynamoConverter<T> converter,
+                          final boolean checkTableExistence,
+                          final List<String> secondaryIndexNames) {
+
         this.tableName = tableName;
         this.readCapacityUnits = readCapacityUnits;
         this.writeCapacityUnits = writeCapacityUnits;
@@ -31,14 +56,13 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
         if(checkTableExistence) {
             if (!DynamoCommons.getInstance().tableExists(tableName)) {
                 logger.info("Table " + tableName + " does not exist. Creating...");
-                createTable();
+                createTable(secondaryIndexNames == null ? new ArrayList<>() : secondaryIndexNames);
             }
         }
         table = DynamoCommons.getInstance().getDb().getTable(tableName);
-        db = DynamoCommons.getInstance().getDb();
     }
     protected DynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter) {
-        this(tableName, readCapacityUnits, writeCapacityUnits, converter, false);
+        this(tableName, readCapacityUnits, writeCapacityUnits, converter, false, new ArrayList<>());
     }
 
     public void truncate() {
@@ -47,7 +71,7 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
         }
     }
 
-    public void createTable() {
+    private void createTable(final List<String> secondaryIndicesNames) {
         try {
             final ArrayList<KeySchemaElement> keySchema = new ArrayList<>();
             keySchema.add(new KeySchemaElement()
@@ -59,9 +83,21 @@ abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
                     .withAttributeName("id")
                     .withAttributeType("S"));
 
+            final ArrayList<GlobalSecondaryIndex> globalSecondaryIndices = new ArrayList<>();
+            for(final String indexName: secondaryIndicesNames) {
+                globalSecondaryIndices.add(new GlobalSecondaryIndex()
+                        .withIndexName(indexName + "-index")
+                        .withKeySchema(new KeySchemaElement().withAttributeName(indexName).withKeyType(KeyType.HASH))
+                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                        .withProvisionedThroughput(new ProvisionedThroughput()
+                                .withReadCapacityUnits(readCapacityUnits)
+                                .withWriteCapacityUnits(writeCapacityUnits)));
+            }
+
             CreateTableRequest request = new CreateTableRequest()
                     .withTableName(tableName)
                     .withKeySchema(keySchema)
+                    .withGlobalSecondaryIndexes(globalSecondaryIndices)
                     .withProvisionedThroughput(new ProvisionedThroughput()
                             .withReadCapacityUnits(readCapacityUnits)
                             .withWriteCapacityUnits(writeCapacityUnits));
