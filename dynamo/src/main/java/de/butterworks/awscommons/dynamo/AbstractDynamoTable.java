@@ -8,16 +8,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-public abstract class DynamoTable<T extends Identifyable> implements CrudInterface<T> {
+public abstract class AbstractDynamoTable<T extends Identifyable> implements CrudInterface<T> {
 
     private final String tableName;
     private final long readCapacityUnits;
     private final long writeCapacityUnits;
     private final Table table;
     private final DynamoConverter<T> converter;
+    private final List<String> secondaryIndexNames;
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamoTable.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDynamoTable.class);
 
     public String getTableName() {
         return tableName;
@@ -35,43 +38,43 @@ public abstract class DynamoTable<T extends Identifyable> implements CrudInterfa
         return table;
     }
 
+    public List<String> getSecondaryIndexNames() {
+        return secondaryIndexNames;
+    }
+
     public DynamoConverter<T> getConverter() {
         return converter;
     }
 
-    protected DynamoTable(final String tableName,
-                          final long readCapacityUnits,
-                          final long writeCapacityUnits,
-                          final DynamoConverter<T> converter,
-                          final boolean checkTableExistence,
-                          final List<String> secondaryIndexNames) {
+    protected AbstractDynamoTable(final String tableName,
+                                  final long readCapacityUnits,
+                                  final long writeCapacityUnits,
+                                  final DynamoConverter<T> converter,
+                                  final boolean checkTableExistence,
+                                  final List<String> secondaryIndexNames) {
 
         this.tableName = tableName;
         this.readCapacityUnits = readCapacityUnits;
         this.writeCapacityUnits = writeCapacityUnits;
         this.converter = converter;
+        this.secondaryIndexNames = secondaryIndexNames;
 
         logger.debug(String.format("Initializing table %s with R/W capacity %s / %s", tableName, readCapacityUnits, writeCapacityUnits));
 
-        if(checkTableExistence) {
+        if (checkTableExistence) {
             if (!DynamoCommons.getInstance().tableExists(tableName)) {
                 logger.info("Table " + tableName + " does not exist. Creating...");
-                createTable(secondaryIndexNames == null ? new ArrayList<>() : secondaryIndexNames);
+                createTable();
             }
         }
         table = DynamoCommons.getInstance().getDb().getTable(tableName);
     }
-    protected DynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter) {
+
+    protected AbstractDynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter) {
         this(tableName, readCapacityUnits, writeCapacityUnits, converter, false, new ArrayList<>());
     }
 
-    public void truncate() {
-        for (final T p : getAll()) {
-            table.deleteItem(new PrimaryKey("id", p.getId().toString()));
-        }
-    }
-
-    private void createTable(final List<String> secondaryIndicesNames) {
+    private void createTable() {
         try {
             final ArrayList<KeySchemaElement> keySchema = new ArrayList<>();
             keySchema.add(new KeySchemaElement()
@@ -84,7 +87,11 @@ public abstract class DynamoTable<T extends Identifyable> implements CrudInterfa
                     .withAttributeType("S"));
 
             final ArrayList<GlobalSecondaryIndex> globalSecondaryIndices = new ArrayList<>();
-            for(final String indexName: secondaryIndicesNames) {
+            for (final String indexName : secondaryIndexNames) {
+                attributeDefinitions.add(new AttributeDefinition()
+                        .withAttributeName(indexName)
+                        .withAttributeType("S"));
+
                 globalSecondaryIndices.add(new GlobalSecondaryIndex()
                         .withIndexName(indexName + "-index")
                         .withKeySchema(new KeySchemaElement().withAttributeName(indexName).withKeyType(KeyType.HASH))
@@ -94,7 +101,7 @@ public abstract class DynamoTable<T extends Identifyable> implements CrudInterfa
                                 .withWriteCapacityUnits(writeCapacityUnits)));
             }
 
-            CreateTableRequest request = new CreateTableRequest()
+            final CreateTableRequest request = new CreateTableRequest()
                     .withTableName(tableName)
                     .withKeySchema(keySchema)
                     .withGlobalSecondaryIndexes(globalSecondaryIndices)
@@ -120,24 +127,15 @@ public abstract class DynamoTable<T extends Identifyable> implements CrudInterfa
         if (dynamoResult == null) {
             return Optional.empty();
         } else {
-
-            final Map<String, Object> result = dynamoResult.asMap();
-            return Optional.of(converter.fromDynamo(result));
+            return Optional.of(converter.fromDynamo(dynamoResult.asMap()));
         }
     }
 
     public List<T> getAll() {
-
-        final ItemCollection<ScanOutcome> items = table.scan(new ScanSpec());
-        final List<T> rslt = new ArrayList<>();
-        final Iterator<Item> iter = items.iterator();
-
-        while (iter.hasNext()) {
-            final Map<String, Object> result = iter.next().asMap();
-
-            rslt.add(converter.fromDynamo(result));
-        }
-        return rslt;
+        //ToDo: implement batching to counter large tables and Dynamo request limits
+        return StreamSupport.stream(table.scan(new ScanSpec()).spliterator(), true)
+                .map(i -> converter.fromDynamo(i.asMap()))
+                .collect(Collectors.toList());
     }
 
     public void add(final T item) {
@@ -146,5 +144,17 @@ public abstract class DynamoTable<T extends Identifyable> implements CrudInterfa
 
     public void update(final T item) {
         table.putItem(converter.toDynamo(item));
+    }
+
+    public void truncate() {
+        getAll()
+                .parallelStream()
+                .forEach(p -> table.deleteItem(new PrimaryKey("id", p.getId().toString())));
+    }
+
+    public List<T> getBySecondaryIndex(final String queryParameter, final String secondaryIndexName) {
+        return StreamSupport.stream(table.getIndex(secondaryIndexName + "-index").query(secondaryIndexName, queryParameter).spliterator(), false)
+                .map(i -> converter.fromDynamo(i.asMap()))
+                .collect(Collectors.toList());
     }
 }

@@ -18,6 +18,7 @@ public final class SerializationUtil {
     public static <T> T fromJson(final String input) {
         return gson.fromJson(input, new TypeToken<T>(){}.getType());
     }
+
     public static <T> T fromJson(final JsonObject input) {
         return gson.fromJson(input, new TypeToken<T>(){}.getType());
     }

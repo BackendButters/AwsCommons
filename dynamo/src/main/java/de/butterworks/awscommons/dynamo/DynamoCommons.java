@@ -11,19 +11,18 @@ import com.amazonaws.services.dynamodbv2.model.TableStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class DynamoCommons {
+public final class DynamoCommons {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoCommons.class);
 
     private final AmazonDynamoDBClient client;
+    private final DynamoDB db;
 
     private static DynamoCommons instance = null;
 
-    private final DynamoDB db;
-
-    private final static String awsAccessKey = System.getenv("accessKey");
-    private final static String awsSecretKey = System.getenv("secretKey");
-    private final static Regions region = Regions.fromName(System.getenv("region").toUpperCase());
+    private final static String awsAccessKey = System.getenv("awsAccessKey") == null ? System.getProperty("awsAccessKey") : System.getenv("awsAccessKey");
+    private final static String awsSecretKey = System.getenv("awsSecretKey") == null ? System.getProperty("awsSecretKey") : System.getenv("awsSecretKey");
+    private final static Regions region = System.getenv("awsRegion") == null ? Regions.fromName(System.getProperty("awsRegion").toLowerCase()) : Regions.fromName(System.getenv("awsRegion").toLowerCase());
 
     private DynamoCommons() {
         logger.info("Using Region " + region.name());
