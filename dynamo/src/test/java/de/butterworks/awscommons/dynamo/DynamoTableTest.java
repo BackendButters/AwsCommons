@@ -1,6 +1,7 @@
 package de.butterworks.awscommons.dynamo;
 
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,15 +21,24 @@ public class DynamoTableTest {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoTableTest.class);
 
-    @BeforeClass
-    public static void beforeClass() {
+    private static void deleteTableIfPresent() {
         try {
-            logger.info("Deleting tables if present...");
+            logger.info("Deleting table if present...");
             DynamoCommons.getInstance().getDb().getTable(tableName).delete();
             DynamoCommons.getInstance().getDb().getTable(tableName).waitForDelete();
         } catch(final ResourceNotFoundException | InterruptedException ex) {
 
         }
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        deleteTableIfPresent();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        deleteTableIfPresent();
     }
 
     @Before
