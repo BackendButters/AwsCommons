@@ -1,8 +1,9 @@
 package de.butterworks.awscommons.lambdaweb;
 
+import com.google.gson.JsonObject;
 import de.butterworks.awscommons.lambdaweb.actions.AbstractApiAction;
 import de.butterworks.awscommons.lambdaweb.exceptions.ExceptionHandler;
-import de.butterworks.awscommons.lambdaweb.integration.IntegrationRequest;
+import de.butterworks.awscommons.lambdaweb.integration.IntegrationRequestBody;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -14,9 +15,10 @@ public abstract class AbstractLambdaRouter {
     public void doHandle(final InputStream inStream, final OutputStream outStream) {
 
         try {
-            final IntegrationRequest integrationRequest = SerializationUtil.fromJson(IOUtils.toString(inStream, Charset.defaultCharset()));
+            final JsonObject inputJson = SerializationUtil.parseAsJsonElement(IOUtils.toString(inStream, Charset.defaultCharset())).getAsJsonObject();
 
-            final AbstractApiResponse responseObject = instantiateAction(integrationRequest.getAction()).handle(integrationRequest.getBody());
+            final AbstractApiAction apiAction = instantiateAction(inputJson.getAsJsonPrimitive("action").getAsString());
+            final AbstractApiResponse responseObject = apiAction.handle((IntegrationRequestBody)SerializationUtil.fromJson(inputJson.getAsJsonObject("body"), apiAction.getType()));
 
             if (responseObject != null) {
                 IOUtils.write(responseObject.toJson(), outStream, Charset.defaultCharset());
