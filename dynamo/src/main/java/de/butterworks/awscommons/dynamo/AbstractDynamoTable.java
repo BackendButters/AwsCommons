@@ -87,18 +87,21 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                     .withAttributeType("S"));
 
             final ArrayList<GlobalSecondaryIndex> globalSecondaryIndices = new ArrayList<>();
-            for (final String indexName : secondaryIndexNames) {
-                attributeDefinitions.add(new AttributeDefinition()
-                        .withAttributeName(indexName)
-                        .withAttributeType("S"));
 
-                globalSecondaryIndices.add(new GlobalSecondaryIndex()
-                        .withIndexName(indexName + "-index")
-                        .withKeySchema(new KeySchemaElement().withAttributeName(indexName).withKeyType(KeyType.HASH))
-                        .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
-                        .withProvisionedThroughput(new ProvisionedThroughput()
-                                .withReadCapacityUnits(readCapacityUnits)
-                                .withWriteCapacityUnits(writeCapacityUnits)));
+            if(secondaryIndexNames != null) {
+                for (final String indexName : secondaryIndexNames) {
+                    attributeDefinitions.add(new AttributeDefinition()
+                            .withAttributeName(indexName)
+                            .withAttributeType("S"));
+
+                    globalSecondaryIndices.add(new GlobalSecondaryIndex()
+                            .withIndexName(indexName + "-index")
+                            .withKeySchema(new KeySchemaElement().withAttributeName(indexName).withKeyType(KeyType.HASH))
+                            .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
+                            .withProvisionedThroughput(new ProvisionedThroughput()
+                                    .withReadCapacityUnits(readCapacityUnits)
+                                    .withWriteCapacityUnits(writeCapacityUnits)));
+                }
             }
 
             final CreateTableRequest request = new CreateTableRequest()
