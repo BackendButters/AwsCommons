@@ -1,13 +1,18 @@
 package de.butterworks.awscommons.dynamo;
 
 
-import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
 import com.amazonaws.services.dynamodbv2.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -107,10 +112,13 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
             final CreateTableRequest request = new CreateTableRequest()
                     .withTableName(tableName)
                     .withKeySchema(keySchema)
-                    .withGlobalSecondaryIndexes(globalSecondaryIndices)
                     .withProvisionedThroughput(new ProvisionedThroughput()
                             .withReadCapacityUnits(readCapacityUnits)
                             .withWriteCapacityUnits(writeCapacityUnits));
+
+            if(!globalSecondaryIndices.isEmpty()) {
+                request.withGlobalSecondaryIndexes(globalSecondaryIndices) ;
+            }
 
             request.setAttributeDefinitions(attributeDefinitions);
 

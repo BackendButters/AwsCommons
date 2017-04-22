@@ -18,7 +18,9 @@ public abstract class AbstractLambdaRouter {
             final JsonObject inputJson = SerializationUtil.parseAsJsonElement(IOUtils.toString(inStream, Charset.defaultCharset())).getAsJsonObject();
 
             final AbstractApiAction apiAction = instantiateAction(inputJson.getAsJsonPrimitive("action").getAsString());
-            final AbstractApiResponse responseObject = apiAction.handle((IntegrationRequestBody)SerializationUtil.fromJson(inputJson.getAsJsonObject("body"), apiAction.getType()));
+            final AbstractApiResponse responseObject = apiAction.getType() != null ?
+                    apiAction.handleGeneric((IntegrationRequestBody)SerializationUtil.fromJson(inputJson.getAsJsonObject("body"), apiAction.getType())) :
+                    apiAction.handleGeneric(null);
 
             if (responseObject != null) {
                 IOUtils.write(responseObject.toJson(), outStream, Charset.defaultCharset());

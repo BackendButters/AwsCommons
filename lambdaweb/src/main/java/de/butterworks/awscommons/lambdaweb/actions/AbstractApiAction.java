@@ -16,5 +16,9 @@ public abstract class AbstractApiAction<T extends IntegrationRequestBody> {
         return this.type;
     }
 
+    public AbstractApiResponse handleGeneric(final IntegrationRequestBody integrationRequestBody) throws AbstractWebException {
+        return handle((T)integrationRequestBody);
+    }
+
     public abstract AbstractApiResponse handle(final T integrationRequestBody) throws AbstractWebException;
 }

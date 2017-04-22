@@ -9,7 +9,7 @@ public class SerializationUtilTest {
     @Test
     public void testSerialization() throws Exception {
         assertThat(SerializationUtil.toJson(new SerializationTestClass("test")))
-                .isEqualTo(SerializationUtil.toJson(SerializationUtil.fromJson("{\"name\":\"test\"}")));
+                .isEqualTo(SerializationUtil.toJson(SerializationUtil.fromJson("{\"name\":\"test\"}", SerializationTestClass.class)));
     }
 
     private class SerializationTestClass {
