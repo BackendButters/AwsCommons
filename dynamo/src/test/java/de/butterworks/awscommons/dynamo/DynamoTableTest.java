@@ -24,8 +24,8 @@ public class DynamoTableTest {
     private static void deleteTableIfPresent() {
         try {
             logger.info("Deleting table if present...");
-            DynamoCommons.getInstance().getDb().getTable(tableName).delete();
-            DynamoCommons.getInstance().getDb().getTable(tableName).waitForDelete();
+            DynamoCommons.getInstance().getDb().getTable(DynamoTestTable.tableName).delete();
+            DynamoCommons.getInstance().getDb().getTable(DynamoTestTable.tableName).waitForDelete();
         } catch(final ResourceNotFoundException | InterruptedException ex) {
 
         }
@@ -48,6 +48,7 @@ public class DynamoTableTest {
 
     @Test
     public void testAdd() {
+
         dynamoTestTable.add(new TestEntity(UUID.randomUUID(), "obacht", "huch"));
     }
 

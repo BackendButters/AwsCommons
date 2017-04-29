@@ -47,16 +47,16 @@ public final class DynamoCommons {
         }
     }
 
-    DynamoDB getDb() {
+    protected DynamoDB getDb() {
         return db;
     }
 
-    static synchronized DynamoCommons getInstance() {
+    public static synchronized DynamoCommons getInstance() {
         if (instance == null) instance = new DynamoCommons();
         return instance;
     }
 
-    boolean tableExists(final String tableName) {
+    public boolean tableExists(final String tableName) {
         try {
             return TableStatus.ACTIVE.toString().equals(db.getTable(tableName).describe().getTableStatus().toUpperCase());
         } catch (final ResourceNotFoundException rnfe) {

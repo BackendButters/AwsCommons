@@ -7,7 +7,7 @@ import java.util.*;
 
 class DynamoTestTable extends AbstractDynamoTable<TestEntity> {
 
-    static final String tableName = "testtable";
+    protected static final String tableName = "testtable";
 
     protected DynamoTestTable() {
 

@@ -28,7 +28,7 @@ public class AbstractApiActionTest {
 
     private class TestIntegrationRequestBody implements IntegrationRequestBody {
 
-        String testField;
+        private String testField;
 
         public TestIntegrationRequestBody(String testField) {
             this.testField = testField;
