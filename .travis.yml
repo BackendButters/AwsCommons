@@ -5,3 +5,13 @@ install:
   - curl -O https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/dynamodb_local_latest.tar.gz
   - tar xf dynamodb_local_latest.tar.gz
   - java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb &
+
+before_install:
+  - sudo apt-get install jq
+  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+
+after_success:
+  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+
+env:
+  - CODACY_PROJECT_TOKEN=4aa0bcf2f4454e1aaf791b4f385c2cf2

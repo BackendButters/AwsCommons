@@ -1,6 +1,7 @@
 # AwsCommons
 
-[![Build Status](https://travis-ci.org/BackendButters/AwsCommons.svg?branch=master)](https://travis-ci.org/BackendButters/AwsCommons)
+[![Build Status](https://travis-ci.org/BackendButters/AwsCommons.svg?branch=master)](https://travis-ci.org/BackendButters/AwsCommons) [![Build Status](https://travis-ci.org/BackendButters/AwsCommons.svg?branch=master)](https://travis-ci.org/BackendButters/AwsCommons)
+
 
 Common library for shared AWS helpers consisting of artifacts for
 * DynamoDB
