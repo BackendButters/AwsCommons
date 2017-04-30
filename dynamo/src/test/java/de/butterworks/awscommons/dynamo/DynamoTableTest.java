@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static de.butterworks.awscommons.dynamo.DynamoTestTable.tableName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DynamoTableTest {
@@ -23,8 +24,8 @@ public class DynamoTableTest {
     private static void deleteTableIfPresent() {
         try {
             logger.info("Deleting table if present...");
-            DynamoCommons.getInstance().getDb().getTable(DynamoTestTable.tableName).delete();
-            DynamoCommons.getInstance().getDb().getTable(DynamoTestTable.tableName).waitForDelete();
+            DynamoCommons.getInstance().getDb().getTable(tableName).delete();
+            DynamoCommons.getInstance().getDb().getTable(tableName).waitForDelete();
         } catch(final ResourceNotFoundException | InterruptedException ex) {
 
         }
@@ -46,13 +47,7 @@ public class DynamoTableTest {
     }
 
     @Test
-    public void testAdd() {
-
-        dynamoTestTable.add(new TestEntity(UUID.randomUUID(), "obacht", "huch"));
-    }
-
-    @Test
-    public void testGet() {
+    public void testAddAndGet() {
         assertThat(dynamoTestTable.get(UUID.randomUUID()).isPresent()).isFalse();
 
         final TestEntity t = new TestEntity(UUID.randomUUID(), "obacht", "huch");
