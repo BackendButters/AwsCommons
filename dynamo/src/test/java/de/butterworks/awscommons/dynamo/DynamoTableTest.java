@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static de.butterworks.awscommons.dynamo.DynamoTestTable.tableName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DynamoTableTest {
