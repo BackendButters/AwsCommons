@@ -4,8 +4,9 @@
 
 
 Common library for shared AWS helpers consisting of artifacts for
-* DynamoDB
-* Lambda w/ API gateway integration
+* DynamoDB [![Known Vulnerabilities](https://snyk.io/test/github/backendbutters/awscommons/badge.svg?targetFile=dynamo%2Fpom.xml)](https://snyk.io/test/github/backendbutters/awscommons?targetFile=dynamo%2Fpom.xml)
+* Lambda w/ API gateway integration [![Known Vulnerabilities](https://snyk.io/test/github/backendbutters/awscommons/badge.svg?targetFile=lambdaweb%2Fpom.xml)](https://snyk.io/test/github/backendbutters/awscommons?targetFile=lambdaweb%2Fpom.xml)
+
 
 Next on the roadmap:
 * SES artifact
