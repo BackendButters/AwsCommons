@@ -5,3 +5,7 @@ install:
   - curl -O https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/dynamodb_local_latest.tar.gz
   - tar xf dynamodb_local_latest.tar.gz
   - java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb &
+notifications:
+  slack:
+    secure: cl8Y6PPd1sjLb9HaoF4NbNBsKpYrYVp69gDeqyVedVZeObhV+G82t6jUdC0j8Gz6T3V0LkDBYrskZ/BF9Q+KX7hoOJGstwU3V7LJzMySv8yRQ0LJQ9G5GR4eKSeCIEMu9ZUDCW5jQzr90qnaHlxr4/JJfnncKu7izHT9PT58PcGGNP5/UyOnyYBbrsTHjy4YANAH+NuX98PSR4fOfenj0wzX+aaW84QzB57Hlwu81Z47VyNicjJV4CHSUBuXa0ywD8nk1R/VfyXCQD0VfZcmvEBn06FPhE3nucqyiFq5wg6aRHweJTFeMaVOExOo2VdT8gjkLx65SUKNSF7l15dxK1mCN6IN4Br9X+5fY5ax03C2tW0wSX9hzPJv/4qHLWigqNES1/7B//s9Iqq5tHa360vhGUIBeILaRquRIpf78laON1huBMmMLd6+z/zm2iIxhWx7qkTWn8OV14Et/nBl1/26IQktQV+FmGQDp1IDCCN/hkX/JoWQRMDfbnwLgA8FN0ZNqqvSXGwGodQ/9ScXGyHzUtpDncBzmqEVKOPqS5EREAKqCbFQVVeSDAaFmmF8tHV3DMPc0mfBNLkJxTPi0niT5XhKWy0AfH84smObeON/2pA/AM/dv++gmMUnO7lLsfiqUMgjOlvZX5p2C0DTSuRiGpRNJyOvanlNC+jaXbQ=
+    on_success: always
