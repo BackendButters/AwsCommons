@@ -1,6 +1,6 @@
 # AwsCommons
 
-[![Build Status](https://travis-ci.org/BackendButters/AwsCommons.svg?branch=master)](https://travis-ci.org/BackendButters/AwsCommons) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ed07dea9f07b4e1cbcb4f529a9a35582)](https://www.codacy.com/app/BackendButters/AwsCommons?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BackendButters/AwsCommons&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/BackendButters/AwsCommons.svg?branch=master)](https://travis-ci.org/BackendButters/AwsCommons) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ed07dea9f07b4e1cbcb4f529a9a35582)](https://www.codacy.com/app/BackendButters/AwsCommons?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BackendButters/AwsCommons&amp;utm_campaign=Badge_Grade) [![Coverage Status](https://coveralls.io/repos/github/BackendButters/AwsCommons/badge.svg?branch=master)](https://coveralls.io/github/BackendButters/AwsCommons?branch=master)
 
 
 Common library for shared AWS helpers consisting of artifacts for
