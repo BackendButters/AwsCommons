@@ -15,15 +15,17 @@ public class AbstractApiActionTest {
     @Test
     public void testAbstractApiActionSerialization() throws IOException {
 
-        final IntegrationRequest originalIntegrationRequest = new IntegrationRequest("TestAction", new TestIntegrationRequestBody("MyFieldValue"));
+        final IntegrationRequest originalIntegrationRequest = new IntegrationRequest("TestAction", new TestIntegrationRequestBody("MyFieldValue"), "dummyUid", "BasicUser");
         final String serializedIntegrationRequest = SerializationUtil.toJson(originalIntegrationRequest);
 
         final JsonObject parsedJson = SerializationUtil.parseAsJsonElement(serializedIntegrationRequest).getAsJsonObject();
 
         final String action = parsedJson.getAsJsonPrimitive("action").getAsString();
+        final String uid = parsedJson.getAsJsonPrimitive("uid").getAsString();
+        final String groups = parsedJson.getAsJsonPrimitive("groups").getAsString();
         final TestIntegrationRequestBody body = SerializationUtil.fromJson(parsedJson.getAsJsonObject("body"), TestIntegrationRequestBody.class);
 
-        assertThat(originalIntegrationRequest).isEqualToComparingFieldByField(new IntegrationRequest(action, body));
+        assertThat(originalIntegrationRequest).isEqualToComparingFieldByField(new IntegrationRequest(action, body, uid, groups));
     }
 
     private class TestIntegrationRequestBody implements IntegrationRequestBody {
