@@ -3,6 +3,7 @@ package de.butterworks.awscommons.lambdaweb.actions;
 import de.butterworks.awscommons.lambdaweb.AbstractApiResponse;
 import de.butterworks.awscommons.lambdaweb.exceptions.AbstractWebException;
 import de.butterworks.awscommons.lambdaweb.integration.IntegrationRequestBody;
+import de.butterworks.awscommons.lambdaweb.integration.UserInfo;
 
 public abstract class AbstractApiAction<T extends IntegrationRequestBody> {
 
@@ -16,9 +17,9 @@ public abstract class AbstractApiAction<T extends IntegrationRequestBody> {
         return this.type;
     }
 
-    public AbstractApiResponse handleGeneric(final IntegrationRequestBody integrationRequestBody) throws AbstractWebException {
-        return handle((T)integrationRequestBody);
+    public AbstractApiResponse handleGeneric(final IntegrationRequestBody integrationRequestBody, final UserInfo userInfo) throws AbstractWebException {
+        return handle((T)integrationRequestBody, userInfo);
     }
 
-    public abstract AbstractApiResponse handle(final T integrationRequestBody) throws AbstractWebException;
+    public abstract AbstractApiResponse handle(final T integrationRequestBody, final UserInfo userInfo) throws AbstractWebException;
 }
