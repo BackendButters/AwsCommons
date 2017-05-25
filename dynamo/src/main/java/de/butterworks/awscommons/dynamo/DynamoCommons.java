@@ -20,6 +20,8 @@ public final class DynamoCommons {
 
     private static DynamoCommons instance = null;
 
+    static final boolean checkTableExistence = System.getenv("checkTableExistence") != null && Boolean.parseBoolean(System.getenv("checkTableExistence"));
+
     private DynamoCommons() {
 
         if (StringUtils.isNullOrEmpty(System.getenv("awsAccessKey")) && StringUtils.isNullOrEmpty(System.getProperty("awsAccessKey"))) {
@@ -38,6 +40,7 @@ public final class DynamoCommons {
 
             logger.info("Using Region " + region.name());
             logger.info("Using Access Key " + awsAccessKey);
+            logger.info("Checking for table existence? " + checkTableExistence);
 
             db = new DynamoDB(AmazonDynamoDBClientBuilder
                     .standard()

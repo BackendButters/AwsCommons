@@ -15,7 +15,6 @@ class DynamoTestTable extends AbstractDynamoTable<TestEntity> {
                 1,
                 1,
                 new TestEntityConverter(),
-                true,
                 Lists.newArrayList("dummySecondaryIndex"));
     }
 }
@@ -36,8 +35,8 @@ class TestEntity implements Identifyable {
     }
 
     @Override
-    public UUID getId() {
-        return id;
+    public String getId() {
+        return id.toString();
     }
 
     public String getDummyField() {

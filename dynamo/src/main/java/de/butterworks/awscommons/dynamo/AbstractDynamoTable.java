@@ -5,7 +5,14 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
-import com.amazonaws.services.dynamodbv2.model.*;
+import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
+import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
+import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
+import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.Projection;
+import com.amazonaws.services.dynamodbv2.model.ProjectionType;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +62,6 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                                   final long readCapacityUnits,
                                   final long writeCapacityUnits,
                                   final DynamoConverter<T> converter,
-                                  final boolean checkTableExistence,
                                   final List<String> secondaryIndexNames) {
 
         this.tableName = tableName;
@@ -66,17 +72,13 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
 
         logger.debug(String.format("Initializing table %s with R/W capacity %s / %s", tableName, readCapacityUnits, writeCapacityUnits));
 
-        if (checkTableExistence) {
+        if (DynamoCommons.checkTableExistence) {
             if (!DynamoCommons.getInstance().tableExists(tableName)) {
                 logger.info("Table " + tableName + " does not exist. Creating...");
                 createTable();
             }
         }
         table = DynamoCommons.getInstance().getDb().getTable(tableName);
-    }
-
-    protected AbstractDynamoTable(final String tableName, final long readCapacityUnits, final long writeCapacityUnits, final DynamoConverter<T> converter) {
-        this(tableName, readCapacityUnits, writeCapacityUnits, converter, false, new ArrayList<>());
     }
 
     private void createTable() {
@@ -133,7 +135,11 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
     }
 
     public Optional<T> get(final UUID id) {
-        final Item dynamoResult = table.getItem("id", id.toString());
+        return get(id.toString());
+    }
+
+    public Optional<T> get(final String id) {
+        final Item dynamoResult = table.getItem("id", id);
 
         if (dynamoResult == null) {
             return Optional.empty();
@@ -160,7 +166,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
     public void truncate() {
         getAll()
                 .parallelStream()
-                .forEach(p -> table.deleteItem(new PrimaryKey("id", p.getId().toString())));
+                .forEach(p -> table.deleteItem(new PrimaryKey("id", p.getId())));
     }
 
     public List<T> getBySecondaryIndex(final String queryParameter, final String secondaryIndexName) {

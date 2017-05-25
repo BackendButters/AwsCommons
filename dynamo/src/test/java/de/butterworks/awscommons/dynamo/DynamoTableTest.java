@@ -53,7 +53,7 @@ public class DynamoTableTest {
         final TestEntity t = new TestEntity(UUID.randomUUID(), "obacht", "huch");
         dynamoTestTable.add(t);
 
-        final Optional<TestEntity> retrieved = dynamoTestTable.get(t.getId());
+        final Optional<TestEntity> retrieved = dynamoTestTable.get(t.getId().toString());
         assertThat(retrieved.isPresent()).isTrue();
         assertThat(t).isEqualTo(retrieved.get());
     }
@@ -82,7 +82,7 @@ public class DynamoTableTest {
         assertThat(retrieved.isPresent()).isTrue();
         assertThat(t).isEqualTo(retrieved.get());
 
-        final TestEntity updatedT = new TestEntity(t.getId(), "HANA", "huch");
+        final TestEntity updatedT = new TestEntity(UUID.fromString(t.getId()), "HANA", "huch");
         dynamoTestTable.update(updatedT);
         final Optional<TestEntity> retrievedUpdated = dynamoTestTable.get(t.getId());
         assertThat(retrievedUpdated.isPresent()).isTrue();
