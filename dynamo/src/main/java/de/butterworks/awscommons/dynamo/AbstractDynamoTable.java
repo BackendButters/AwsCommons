@@ -4,6 +4,7 @@ package de.butterworks.awscommons.dynamo;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.document.spec.ScanSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -13,6 +14,7 @@ import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProjectionType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +97,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
 
             final ArrayList<GlobalSecondaryIndex> globalSecondaryIndices = new ArrayList<>();
 
-            if(secondaryIndexNames != null) {
+            if (secondaryIndexNames != null) {
                 for (final String indexName : secondaryIndexNames) {
                     attributeDefinitions.add(new AttributeDefinition()
                             .withAttributeName(indexName)
@@ -118,8 +120,8 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                             .withReadCapacityUnits(readCapacityUnits)
                             .withWriteCapacityUnits(writeCapacityUnits));
 
-            if(!globalSecondaryIndices.isEmpty()) {
-                request.withGlobalSecondaryIndexes(globalSecondaryIndices) ;
+            if (!globalSecondaryIndices.isEmpty()) {
+                request.withGlobalSecondaryIndexes(globalSecondaryIndices);
             }
 
             request.setAttributeDefinitions(attributeDefinitions);
@@ -173,5 +175,19 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
         return StreamSupport.stream(table.getIndex(secondaryIndexName + "-index").query(secondaryIndexName, queryParameter).spliterator(), false)
                 .map(i -> converter.fromDynamo(i.asMap()))
                 .collect(Collectors.toList());
+    }
+
+    public void add(final List<T> items) {
+
+        Lists.partition(items, 25)
+                .parallelStream()
+                .forEach(itemChunk -> {
+                    DynamoCommons.getInstance().getDb().batchWriteItem(new TableWriteItems(tableName)
+                            .withItemsToPut(itemChunk
+                                    .stream()
+                                    .map(converter::toDynamo)
+                                    .collect(Collectors.toList())));
+
+                });
     }
 }

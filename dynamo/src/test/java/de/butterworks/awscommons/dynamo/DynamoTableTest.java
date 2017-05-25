@@ -1,6 +1,7 @@
 package de.butterworks.awscommons.dynamo;
 
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import com.google.common.collect.Lists;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -70,6 +71,21 @@ public class DynamoTableTest {
         final List<TestEntity> retrieved = dynamoTestTable.getAll();
         assertThat(retrieved).hasSize(2);
         assertThat(retrieved).contains(t1, t2);
+    }
+
+    @Test
+    public void testAddList() {
+        assertThat(dynamoTestTable.getAll()).isEmpty();
+
+        final int items = 200;
+
+        final List<TestEntity> itemList = Lists.newArrayList();
+        for(int i = 0; i < items; i++) {
+            itemList.add(new TestEntity(UUID.randomUUID(), "obacht", "huch"));
+        }
+        dynamoTestTable.add(itemList);
+
+        assertThat(dynamoTestTable.getAll()).hasSize(items);
     }
 
     @Test
