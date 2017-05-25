@@ -74,7 +74,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
 
         logger.debug(String.format("Initializing table %s with R/W capacity %s / %s", tableName, readCapacityUnits, writeCapacityUnits));
 
-        if (DynamoCommons.checkTableExistence) {
+        if (DynamoCommons.getCheckTableExistence()) {
             if (!DynamoCommons.getInstance().tableExists(tableName)) {
                 logger.info("Table " + tableName + " does not exist. Creating...");
                 createTable();

@@ -20,7 +20,7 @@ public final class DynamoCommons {
 
     private static DynamoCommons instance = null;
 
-    static final boolean checkTableExistence = System.getenv("checkTableExistence") != null && Boolean.parseBoolean(System.getenv("checkTableExistence"));
+    private static final boolean checkTableExistence = System.getenv("checkTableExistence") != null && Boolean.parseBoolean(System.getenv("checkTableExistence"));
 
     private DynamoCommons() {
 
@@ -65,5 +65,9 @@ public final class DynamoCommons {
         } catch (final ResourceNotFoundException rnfe) {
             return false;
         }
+    }
+
+    public static boolean getCheckTableExistence() {
+        return checkTableExistence;
     }
 }

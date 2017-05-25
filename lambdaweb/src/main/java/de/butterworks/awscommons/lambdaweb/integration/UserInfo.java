@@ -6,6 +6,10 @@ import java.util.UUID;
 
 public class UserInfo {
 
+    private final UUID userId;
+
+    private final List<String> groups;
+
     public UserInfo(final String userId, final String groups) {
         this.userId = userId != null ? UUID.fromString(userId) : null;
         this.groups = groups != null ? Arrays.asList(groups.split(",")) : null;
@@ -18,8 +22,4 @@ public class UserInfo {
     public List<String> getGroups() {
         return groups;
     }
-
-    private final UUID userId;
-
-    private final List<String> groups;
 }
