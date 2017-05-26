@@ -14,4 +14,6 @@ public interface CrudInterface<T extends Identifyable> {
     void truncate();
 
     void update(final T item);
+
+    void addAll(final List<T> items);
 }

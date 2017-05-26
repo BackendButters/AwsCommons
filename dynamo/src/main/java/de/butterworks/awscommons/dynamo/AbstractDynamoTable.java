@@ -177,7 +177,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                 .collect(Collectors.toList());
     }
 
-    public void add(final List<T> items) {
+    public void addAll(final List<T> items) {
 
         Lists.partition(items, 25)
                 .parallelStream()

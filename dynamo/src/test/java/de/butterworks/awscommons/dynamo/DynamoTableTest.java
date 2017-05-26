@@ -83,7 +83,7 @@ public class DynamoTableTest {
         for(int i = 0; i < items; i++) {
             itemList.add(new TestEntity(UUID.randomUUID(), "obacht", "huch"));
         }
-        dynamoTestTable.add(itemList);
+        dynamoTestTable.addAll(itemList);
 
         assertThat(dynamoTestTable.getAll()).hasSize(items);
     }
