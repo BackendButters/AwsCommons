@@ -23,7 +23,7 @@ private static final Logger logger = LoggerFactory.getLogger(ExceptionHandler.cl
         if(!(e instanceof AbstractClientException)) {
             logger.error("Error encountered: " + e.getMessage(), e);
             logException(e);
-            throw new InternalErrorException(e.getMessage());
+            throw new InternalErrorException(e.getMessage(), e);
         } else {
             logger.debug("Client error encountered: " + e.getMessage(), e);
         }
