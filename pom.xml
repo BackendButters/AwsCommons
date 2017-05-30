@@ -112,6 +112,9 @@
             <environmentVariables>
               <checkTableExistence>true</checkTableExistence>
             </environmentVariables>
+            <classpathDependencyExcludes>
+              <classpathDependencyExclude>com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor</classpathDependencyExclude>
+            </classpathDependencyExcludes>
           </configuration>
         </plugin>
       </plugins>

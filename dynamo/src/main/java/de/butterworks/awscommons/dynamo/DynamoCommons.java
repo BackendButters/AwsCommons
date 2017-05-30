@@ -9,8 +9,6 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.TableStatus;
 import com.amazonaws.util.StringUtils;
-import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.handlers.TracingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +46,6 @@ public final class DynamoCommons {
                     .standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKey, awsSecretKey)))
                     .withRegion(region)
-                    .withRequestHandlers(new TracingHandler(AWSXRay.getGlobalRecorder()))
                     .build());
         }
     }
