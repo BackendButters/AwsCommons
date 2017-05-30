@@ -1,7 +1,9 @@
 package de.butterworks.awscommons.dynamo;
 
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import com.amazonaws.xray.AWSXRay;
 import com.google.common.collect.Lists;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,7 +46,13 @@ public class DynamoTableTest {
 
     @Before
     public void before() {
+        AWSXRay.beginDummySegment();
         dynamoTestTable.truncate();
+    }
+
+    @After
+    public void after() {
+        AWSXRay.endSegment();
     }
 
     @Test
