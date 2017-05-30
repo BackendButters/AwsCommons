@@ -1,7 +1,7 @@
 package de.butterworks.awscommons.lambdaweb;
 
 import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.entities.Subsegment;
+import com.amazonaws.xray.entities.Segment;
 import com.google.gson.JsonObject;
 import de.butterworks.awscommons.lambdaweb.actions.AbstractApiAction;
 import de.butterworks.awscommons.lambdaweb.exceptions.ExceptionHandler;
@@ -17,7 +17,7 @@ public abstract class AbstractLambdaRouter {
 
     public void doHandle(final InputStream inStream, final OutputStream outStream) throws Exception {
 
-        final Subsegment handlingSegment = AWSXRay.beginSubsegment("Handling");
+        final Segment handlingSegment = AWSXRay.beginSegment("Handling");
         try {
 
             final JsonObject inputJson = SerializationUtil.parseAsJsonElement(IOUtils.toString(inStream, Charset.defaultCharset())).getAsJsonObject();
@@ -37,7 +37,7 @@ public abstract class AbstractLambdaRouter {
             handlingSegment.addException(e);
             ExceptionHandler.processException(e);
         } finally {
-            AWSXRay.endSubsegment();
+            handlingSegment.end();
         }
     }
 

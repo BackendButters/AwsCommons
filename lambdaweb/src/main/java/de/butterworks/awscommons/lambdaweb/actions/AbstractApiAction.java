@@ -1,7 +1,7 @@
 package de.butterworks.awscommons.lambdaweb.actions;
 
 import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.entities.Subsegment;
+import com.amazonaws.xray.entities.Segment;
 import de.butterworks.awscommons.lambdaweb.AbstractApiResponse;
 import de.butterworks.awscommons.lambdaweb.exceptions.AbstractWebException;
 import de.butterworks.awscommons.lambdaweb.integration.IntegrationRequestBody;
@@ -20,11 +20,11 @@ public abstract class AbstractApiAction<T extends IntegrationRequestBody> {
     }
 
     public AbstractApiResponse handleGeneric(final IntegrationRequestBody integrationRequestBody, final UserInfo userInfo) throws AbstractWebException {
-        final Subsegment actionProcessing = AWSXRay.beginSubsegment("Action processing");
+        final Segment actionProcessingSegment = AWSXRay.beginSegment("Action processing");
         try {
             return handle((T) integrationRequestBody, userInfo);
         } finally {
-            AWSXRay.endSubsegment();
+            actionProcessingSegment.end();
         }
     }
 
