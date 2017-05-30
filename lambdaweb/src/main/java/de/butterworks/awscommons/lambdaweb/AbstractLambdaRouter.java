@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 
 public abstract class AbstractLambdaRouter {
 
-    public void doHandle(final InputStream inStream, final OutputStream outStream) {
+    public void doHandle(final InputStream inStream, final OutputStream outStream) throws Exception {
 
         final Subsegment handlingSegment = AWSXRay.beginSubsegment("Handling");
         try {
