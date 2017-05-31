@@ -1,7 +1,5 @@
 package de.butterworks.awscommons.lambdaweb;
 
-import com.amazonaws.xray.AWSXRay;
-import com.amazonaws.xray.entities.Segment;
 import com.google.gson.JsonObject;
 import de.butterworks.awscommons.lambdaweb.actions.AbstractApiAction;
 import de.butterworks.awscommons.lambdaweb.exceptions.ExceptionHandler;
@@ -17,9 +15,7 @@ public abstract class AbstractLambdaRouter {
 
     public void doHandle(final InputStream inStream, final OutputStream outStream) throws Exception {
 
-        final Segment handlingSegment = AWSXRay.beginSegment("LambdaHandling");
         try {
-
             final JsonObject inputJson = SerializationUtil.parseAsJsonElement(IOUtils.toString(inStream, Charset.defaultCharset())).getAsJsonObject();
 
             final AbstractApiAction apiAction = instantiateAction(inputJson.getAsJsonPrimitive("action").getAsString());
@@ -27,17 +23,14 @@ public abstract class AbstractLambdaRouter {
             final UserInfo userInfo = new UserInfo(inputJson.getAsJsonPrimitive("uid").getAsString(), inputJson.getAsJsonPrimitive("groups").getAsString());
 
             final AbstractApiResponse responseObject = apiAction.getType() != null ?
-                    apiAction.handleGeneric((IntegrationRequestBody)SerializationUtil.fromJson(inputJson.getAsJsonObject("body"), apiAction.getType()), userInfo) :
+                    apiAction.handleGeneric((IntegrationRequestBody) SerializationUtil.fromJson(inputJson.getAsJsonObject("body"), apiAction.getType()), userInfo) :
                     apiAction.handleGeneric(null, userInfo);
 
             if (responseObject != null) {
                 IOUtils.write(responseObject.toJson(), outStream, Charset.defaultCharset());
             }
         } catch (final Exception e) {
-            handlingSegment.addException(e);
             ExceptionHandler.processException(e);
-        } finally {
-            handlingSegment.end();
         }
     }
 
