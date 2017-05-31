@@ -17,7 +17,7 @@ public abstract class AbstractLambdaRouter {
 
     public void doHandle(final InputStream inStream, final OutputStream outStream) throws Exception {
 
-        final Segment handlingSegment = AWSXRay.beginSegment("Handling");
+        final Segment handlingSegment = AWSXRay.beginSegment("LambdaHandling");
         try {
 
             final JsonObject inputJson = SerializationUtil.parseAsJsonElement(IOUtils.toString(inStream, Charset.defaultCharset())).getAsJsonObject();
