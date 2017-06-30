@@ -118,4 +118,21 @@ public class DynamoTableTest {
         final List<TestEntity> retrieved = dynamoTestTable.getBySecondaryIndex("huch", dynamoTestTable.getSecondaryIndexNames().get(0));
         assertThat(retrieved).containsExactlyInAnyOrder(t1, t2);
     }
+
+    @Test
+    public void testDelete() {
+        assertThat(dynamoTestTable.getAll()).isEmpty();
+
+        final TestEntity t1 = new TestEntity(UUID.randomUUID(), "obacht", "huch");
+        final TestEntity t2 = new TestEntity(UUID.randomUUID(), "obacht", "huch");
+        final TestEntity t3 = new TestEntity(UUID.randomUUID(), "obacht", "HANA");
+        dynamoTestTable.add(t1);
+        dynamoTestTable.add(t2);
+        dynamoTestTable.add(t3);
+
+        assertThat(dynamoTestTable.getAll()).hasSize(3);
+        dynamoTestTable.delete(t1);
+        assertThat(dynamoTestTable.getAll()).hasSize(2);
+        assertThat(dynamoTestTable.getAll()).contains(t2, t3);
+    }
 }

@@ -136,10 +136,12 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
         }
     }
 
+    @Override
     public Optional<T> get(final UUID id) {
         return get(id.toString());
     }
 
+    @Override
     public Optional<T> get(final String id) {
         final Item dynamoResult = table.getItem("id", id);
 
@@ -150,6 +152,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
         }
     }
 
+    @Override
     public List<T> getAll() {
         //ToDo: implement batching to counter large tables and Dynamo request limits
         return StreamSupport.stream(table.scan(new ScanSpec()).spliterator(), true)
@@ -157,14 +160,17 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void add(final T item) {
         table.putItem(converter.toDynamo(item));
     }
 
+    @Override
     public void update(final T item) {
         table.putItem(converter.toDynamo(item));
     }
 
+    @Override
     public void truncate() {
         getAll()
                 .parallelStream()
@@ -177,6 +183,7 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void addAll(final List<T> items) {
 
         Lists.partition(items, 25)
@@ -189,5 +196,20 @@ public abstract class AbstractDynamoTable<T extends Identifyable> implements Cru
                                     .collect(Collectors.toList())));
 
                 });
+    }
+
+    @Override
+    public void delete(final UUID id) {
+        this.delete(id.toString());
+    }
+
+    @Override
+    public void delete(final String id) {
+        table.deleteItem(new PrimaryKey("id", id));
+    }
+
+    @Override
+    public void delete(final T item) {
+        this.delete(item.getId());
     }
 }
