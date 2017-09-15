@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -134,5 +135,21 @@ public class DynamoTableTest {
         dynamoTestTable.delete(t1);
         assertThat(dynamoTestTable.getAll()).hasSize(2);
         assertThat(dynamoTestTable.getAll()).contains(t2, t3);
+    }
+
+    @Test
+    public void testGetLargeDataset() {
+
+        // ingest data - 100k entries to keep test time acceptable
+        final int numberOfEntities = 10000;
+        final List<TestEntity> testEntities = new ArrayList<>(numberOfEntities);
+        for(int i = 0; i < numberOfEntities; i++) {
+            testEntities.add(new TestEntity(UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+        }
+        dynamoTestTable.addAll(testEntities);
+
+        //retrieve data
+        final List<TestEntity> retrievedEntities = dynamoTestTable.getAll();
+        assertThat(testEntities.size()).isEqualTo(retrievedEntities.size());
     }
 }
