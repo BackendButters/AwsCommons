@@ -1,20 +1,19 @@
 package de.butterworks.awscommons.lambdaweb.exceptions;
 
-import com.getsentry.raven.Raven;
-import com.getsentry.raven.RavenFactory;
-import com.getsentry.raven.dsn.Dsn;
+import io.sentry.SentryClient;
+import io.sentry.SentryClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExceptionHandler {
 
-private static final Raven raven = System.getenv("ravenDsn") == null ? null : RavenFactory.ravenInstance(new Dsn(System.getenv("ravenDsn")));
+private static final SentryClient sentry = System.getenv("sentryDsn") == null ? null : SentryClientFactory.sentryClient(System.getenv("sentryDsn"));
 private static final Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
 
     private static void logException(final Throwable ex) {
-        if(raven != null ) {
+        if(sentry != null ) {
             logger.debug("Reporting exception to Sentry");
-            raven.sendException(ex);
+            sentry.sendException(ex);
         }
     }
 

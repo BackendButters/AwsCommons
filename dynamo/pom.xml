@@ -3,7 +3,7 @@
     <parent>
         <artifactId>awscommons</artifactId>
         <groupId>de.butterworks</groupId>
-        <version>1.4-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.11.136</version>
+            <version>1.11.196</version>
         </dependency>
     </dependencies>
 </project>

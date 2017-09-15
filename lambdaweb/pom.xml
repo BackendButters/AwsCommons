@@ -3,7 +3,7 @@
     <parent>
         <artifactId>awscommons</artifactId>
         <groupId>de.butterworks</groupId>
-        <version>1.4-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,12 +21,12 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.6.2</version>
+            <version>2.8.1</version>
         </dependency>
         <dependency>
-            <groupId>com.getsentry.raven</groupId>
-            <artifactId>raven</artifactId>
-            <version>8.0.3</version>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry</artifactId>
+            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
