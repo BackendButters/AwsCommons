@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.zip.GZIPOutputStream;
 
 public abstract class AbstractLambdaRouter {
 
@@ -27,7 +28,9 @@ public abstract class AbstractLambdaRouter {
                     apiAction.handleGeneric(null, userInfo);
 
             if (responseObject != null) {
-                IOUtils.write(responseObject.toJson(), outStream, Charset.defaultCharset());
+                final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outStream);
+                IOUtils.write(responseObject.toJson(), gzipOutputStream, "UTF-8");
+                gzipOutputStream.finish();
             }
         } catch (final Exception e) {
             ExceptionHandler.processException(e);
