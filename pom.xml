@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-xray</artifactId>
-      <version>1.11.223</version>
+      <version>1.11.372</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
